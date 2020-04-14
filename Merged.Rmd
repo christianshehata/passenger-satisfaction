@@ -1,0 +1,122 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+install.packages('caret')
+```
+
+
+```{r}
+library(caret)
+```
+```{r}
+train <- read.csv(file = 'train.csv')
+test <- read.csv(file = 'test.csv')
+```
+
+
+```{r}
+train <- na.omit(train)
+test <- na.omit(test)
+```
+
+
+```{r}
+train
+```
+```{r}
+test
+```
+
+
+```{r}
+#Model Building Logistic Regression
+glm_model <- train(satisfaction~. -X -id, data = train, method = "glmnet", trControl = trainControl(method="cv",number=10), preProcess= c("center", "scale"))
+
+
+```
+
+```{r}
+plot(glm_model)
+```
+
+
+
+```{r}
+#Predict Function Logistic Regression
+predicted_logistic <- predict(glm_model, test)
+```
+
+
+```{r}
+#Table Logistic Regression
+table_glm <- table(predicted_logistic, test$satisfaction)
+table_glm
+```
+
+
+```{r}
+#Model Building Tree
+tree <- train(
+          satisfaction~. -X -id,
+          train,
+          method = "rpart",
+          trControl = trainControl(
+          method = "cv",
+          number = 10,
+        )
+)
+```
+
+
+```{r}
+plot(tree)
+```
+
+```{r}
+#Predict Funtion Decision tree
+predicted_tree <- predict(tree, test)
+```
+
+
+
+```{r}
+table_tree <- table(predicted_tree, test$satisfaction)
+table_tree
+```
+
+```{r}
+tcon <- trainControl(method = 'cv', number = 10, verboseIter = TRUE)
+knn_model <- train(satisfaction~. -X -id,
+                   train,
+                   method = 'knn',
+                   trControl = tcon
+                   )
+```
+
+```{r}
+predicted_knn <- predict(knn_model, test)
+predicted_knn
+```
+
+
+```{r}
+sum(is.na(test))
+test$satisfaction
+head(test)
+```
+
+
+
+
+
+
+
+
+
