@@ -1,0 +1,59 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r}
+library(caret)
+```
+
+
+
+```{r}
+train <- read.csv(file = 'train.csv')
+test <- read.csv(file = 'test.csv')
+
+
+```
+
+
+```{r}
+str(train)
+```
+
+
+```{r}
+train <- na.omit(train)
+
+tcon <- trainControl(method = 'cv', number = 10, verboseIter = TRUE)
+
+knn_model <- train(satisfaction~. -X -id,
+                   train,
+                   method = 'knn',
+                   trControl = tcon
+                   )
+```
+
+
+```{r}
+test <- na.omit(test)
+
+predicted_knn <- predict(knn_model, test)
+predicted_knn
+```
+
+```{r}
+table_knn <- table(predicted_knn, test$satisfaction)
+```
+
+
+
+```{r}
+sum(is.na(test))
+test$satisfaction
+
+
+head(test)
+```
+
