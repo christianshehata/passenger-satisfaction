@@ -7,14 +7,12 @@ This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute
 
 Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
 
-```{r}
-install.packages('caret')
-```
 
 
 ```{r}
 library(caret)
 ```
+
 ```{r}
 train <- read.csv(file = 'train.csv')
 test <- read.csv(file = 'test.csv')
@@ -114,9 +112,40 @@ head(test)
 
 
 
+```{r}
+# ???
+#hdr = header(train)
+#tdr = header(test)
+```
+
+
+```{r}
+nnet = train(satisfaction~., data = train, method = "nnet", trControl = trainControl(method="cv",number=10), na.action=na.exclude)
+```
+
+
+```{r}
+pred_nnet = predict(nnet, test)
+pred_nnet
+```
 
 
 
+```{r}
+svm_tr_control = trainControl(method = "repeatedcv", number = 10,verboseIter = TRUE)
+model.svm <- train(satisfaction ~ ., train, method = "svmLinear", trControl = svm_tr_control, na.action = na.pass)
+```
 
+```{r}
+pred.svm <- predict(model.svm, test)
+
+summary(pred.svm)
+```
+
+
+```{r}
+tab.svm <- table(pred.svm, test$satisfaction)
+tab.svm
+```
 
 
