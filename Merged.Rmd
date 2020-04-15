@@ -324,9 +324,6 @@ modelNames <- function() {
 }
 
 modelNames()
-
-
-
 ```
 
 ```{r}
@@ -350,4 +347,58 @@ model.nb2 <- train(
 ```{r}
 model.nb2
 ```
+```{r}
+```
+
+
+```{r}
+```
+
+
+```{r}
+confusionMatrix(table.nb)
+```
+```{r}
+predicted_model_nb2 <- predict(model.nb2, test)
+```
+
+
+```{r}
+table_model_nb2 <- table(predicted_model_nb2, test$satisfaction)
+```
+
+```{r}
+#      Sensitivity : 0.8263                 
+   #          Specificity : 0.9270                 
+   #       Pos Pred Value : 0.9353                 
+   #       Neg Pred Value : 0.8067                 
+   #           Prevalence : 0.5611                 
+   #       Detection Rate : 0.4636                 
+   # Detection Prevalence : 0.4957                 
+   #    Balanced Accuracy : 0.8766  
+# 
+# pred.nb                   neutral or dissatisfied satisfied
+#   neutral or dissatisfied                   12004       830
+#   satisfied                                  2524     10535
+
+
+confusionMatrix(table_model_nb2)
+```
+```{r}
+
+install.packages(mlbench)
+library('mlbench')
+results <- resamples(list(
+  knn = knn_model,
+  log = glm_model,
+  tree = tree,
+  svm = model.svm,
+  nb = model.nb
+))
+```
+
+```{r}
+bwplot(results)
+```
+
 
