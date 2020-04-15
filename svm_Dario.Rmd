@@ -1,0 +1,75 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+
+train<-read.csv(file='train.csv')
+test<-read.csv(file = 'test.csv')
+```
+
+
+```{r}
+train <- na.omit(train)
+test<- na.omit(test)
+summary(train)
+```
+
+```{r}
+
+library(caret)
+library(rpart)
+library(rpart.plot)
+```
+
+```{r}
+head(train)
+```
+
+
+```{r}
+str(train)
+```
+
+```{r}
+shuffle <- sample(nrow(train))
+train <- train[shuffle,-(1:2)]
+
+test<-test[,-(1:2)]
+```
+
+
+
+
+```{r}
+model.svm<- train(satisfaction ~ ., train[1:50000,], method = "svmLinear", trControl = trainControl(method = "repeatedcv", number = 10,verboseIter = TRUE),na.action = na.pass)
+```
+
+
+```{r}
+pred.svm <- predict(model.svm, test)
+
+```
+
+
+
+```{r}
+tab.svm<-table(pred.svm, test$satisfaction)
+tab.svm
+```
+```{r}
+acc <- c(acc.svm = sum(diag(tab.svm))/sum(tab.svm)) ## accuracy
+        
+acc
+
+
+rec <- c(rec.svm = tab.svm[2,2]/(tab.svm[1,2] + tab.svm[2,2]))
+        
+rec
+prec <- c(prec.svm = tab.svm[2,2]/(tab.svm[2,1] + tab.svm[2,2]))
+
+prec          
+f1 <-c(f1.svm= 2 * (rec * prec) / (rec + prec))
+f1
+```
