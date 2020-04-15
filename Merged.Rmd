@@ -298,7 +298,10 @@ pred.nb
 ```{r}
 table.nb <- table(pred.nb, test$satisfaction)
 table.nb
+confusionMatrix(table.nb)
 ```
+
+
 
 acc <- c(acc.svm = sum(diag(tab.svm))/sum(tab.svm))
         
@@ -307,18 +310,44 @@ rec <- c(rec.svm = tab.svm[2,2]/(tab.svm[1,2] + tab.svm[2,2]))
 prec <- c(prec.svm = tab.svm[2,2]/(tab.svm[2,1] + tab.svm[2,2]))
 
 ```{r}
-
 list_of_tables <- list(table_knn, table_nnet, tab.svm, table_glm, table_tree, table.nb)
-accuracyPrecisionRecall <- function(x) {
-  print(x)
-  print(paste('Accuracy: ', sum(diag(x))/sum(x)))
-  print(paste('Recall: ', x[2,2]/(x[1,2] + x[2,2])))
-  print(paste('Precision: ', x[2,2]/(x[2,1] + x[2,2])))
+list_of_pred <- list(predicted_knn, pred_nnet, pred.svm, predicted_logistic, predicted_tree, pred.nb)
+factor_satisfaction <- factor(test$satisfaction)
+
+
+
+modelNames <- function() {
+    for (j in list_of_tables) {
+       confusionMatrixModels <- confusionMatrix(j)
+      print(confusionMatrixModels, digits = 8)
+    }
 }
 
-for (i in list_of_tables) {
-  accuracyPrecisionRecall(i)
-}
+modelNames()
+
+
+
 ```
 
+```{r}
+naive_bayes_importance <- varImp(model.nb)
+plot(naive_bayes_importance)
+```
+
+```{r}
+model.nb2 <- train(
+                satisfaction ~. -X -id -Gender - Departure.Arrival.time.convenient - Departure.Delay.in.Minutes - Arrival.Delay.in.Minutes,
+                train,
+                method = "naive_bayes",
+                trControl = trainControl(
+                    method = "cv",
+                    number = 10,
+                  )
+              )
+```
+
+
+```{r}
+model.nb2
+```
 
