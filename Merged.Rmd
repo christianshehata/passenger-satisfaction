@@ -18,32 +18,116 @@ train <- read.csv(file = 'train.csv')
 test <- read.csv(file = 'test.csv')
 ```
 
+```{r}
+#We downloaded the data splitted as train and test data. We thought that we should bind this two datasets for our first data discovery to see how the data we got looks like and to get
+#a better understanding of the variables.
+data <- rbind(train, test)
+
+```
 
 ```{r}
+head(data)
+```
+
+```{r}
+str(data)
+```
+
+```{r}
+summary(data)
+```
+
+
+```{r}
+#After summarizing the data we see that we have 393 missing values in 'Arrival.Delay.in.Minutes' so we decided to eliminate the rows containing this missing values in both train and test (da sie nur einen sehr kleinen teil des datensatzes ausmachen).
 train <- na.omit(train)
 test <- na.omit(test)
 ```
 
 
 ```{r}
-train
+#To simplify the levels of satisfaction we decided to rename them from 'neutral or dissatisfied' to 'no' and 'satisfied' to 'yes'. Since we cannot detect whether a customer was neutral or not satisfied we will not miss any important information.
+test$satisfaction <-factor(test$satisfaction, levels = c("neutral or dissatisfied", "satisfied"), labels=c("no", "yes"))
+train$satisfaction <- factor(train$satisfaction, levels = c("neutral or dissatisfied", "satisfied"), labels=c("no", "yes"))
+
 ```
+
 ```{r}
-test
+head(train)
+```
+
+
+```{r}
+plot(data$satisfaction ~ data$Flight.Distance)
+```
+
+```{r}
+plot(data$satisfaction ~ data$Baggage.handling)
+```
+
+
+```{r}
+plot(data$satisfaction ~ data$Inflight.service)
+```
+
+
+```{r}
+plot(data$satisfaction ~ data$Inflight.entertainment)
+```
+
+
+```{r}
+plot(data$satisfaction ~ data$Food.and.drink)
+```
+
+
+```{r}
+plot(data$satisfaction ~ data$Type.of.Travel)
+```
+
+
+```{r}
+plot(data$satisfaction ~ data$On.board.service)
+
+```
+
+
+```{r}
+plot(data$satisfaction ~ data$Seat.comfort)
+
+```
+
+
+```{r}
+plot(data$satisfaction ~ data$Cleanliness)
+```
+
+```{r}
+boxplot(data$Flight.Distance)
+```
+
+
+```{r}
+# 1= On board service
+# 2= Seat comfort
+# 3= Cleanliness
+# 4= Inflight Service
+# 5= Inflight Entertainment
+# 6= Food and Drink
+# 7= Baggage handling
+boxplot(data$On.board.service, data$Seat.comfort, data$Cleanliness, data$Inflight.service, data$Inflight.entertainment, data$Food.and.drink, data$Baggage.handling)
 ```
 
 
 ```{r}
 #Model Building Logistic Regression
 glm_model <- train(satisfaction~. -X -id, data = train, method = "glmnet", trControl = trainControl(method="cv",number=10), preProcess= c("center", "scale"))
-
-
 ```
 
 ```{r}
+#plot logistic regression
 plot(glm_model)
 ```
-
 
 
 ```{r}
@@ -74,6 +158,7 @@ tree <- train(
 
 
 ```{r}
+#Plot Decision Tree
 plot(tree)
 ```
 
@@ -83,13 +168,14 @@ predicted_tree <- predict(tree, test)
 ```
 
 
-
 ```{r}
+#Table Decision Tree
 table_tree <- table(predicted_tree, test$satisfaction)
 table_tree
 ```
 
 ```{r}
+#KNN 
 tcon <- trainControl(method = 'cv', number = 10, verboseIter = TRUE)
 knn_model <- train(satisfaction~. -X -id,
                    train,
@@ -99,53 +185,140 @@ knn_model <- train(satisfaction~. -X -id,
 ```
 
 ```{r}
+summary(knn_model)
+```
+
+
+```{r}
 predicted_knn <- predict(knn_model, test)
 predicted_knn
 ```
 
-
 ```{r}
-sum(is.na(test))
-test$satisfaction
-head(test)
-```
-
-
-
-```{r}
-# ???
-#hdr = header(train)
-#tdr = header(test)
+table_knn <- table(predicted_knn, test$satisfaction)
+table_knn
 ```
 
 
 ```{r}
-nnet = train(satisfaction~., data = train, method = "nnet", trControl = trainControl(method="cv",number=10), na.action=na.exclude)
+nnet = train(satisfaction~., data = train, method = "nnet", trControl = trainControl(method="cv",number=10))
+```
+
+```{r}
+nnet
+```
+
+```{r}
+summary(nnet)
 ```
 
 
 ```{r}
-pred_nnet = predict(nnet, test)
+pred_nnet <- predict(nnet, test)
 pred_nnet
 ```
 
 
-
 ```{r}
-svm_tr_control = trainControl(method = "repeatedcv", number = 10,verboseIter = TRUE)
-model.svm <- train(satisfaction ~ ., train, method = "svmLinear", trControl = svm_tr_control, na.action = na.pass)
+table_nnet <- table(pred_nnet, test$satisfaction)
+table_nnet
 ```
 
 ```{r}
-pred.svm <- predict(model.svm, test)
+svm_tr_control = trainControl(method = "repeatedcv", number = 10,verboseIter = TRUE)
+model.svm <- train(satisfaction ~ . -X -id, train[1:5000, ], method = "svmLinear", trControl = svm_tr_control, na.action = na.pass)
+```
 
-summary(pred.svm)
+```{r}
+model.svm
+```
+
+```{r}
+summary(model.svm)
+```
+
+
+```{r}
+pred.svm <- predict(model.svm, test)
 ```
 
 
 ```{r}
 tab.svm <- table(pred.svm, test$satisfaction)
 tab.svm
+```
+
+```{r}
+acc <- c(acc.svm = sum(diag(tab.svm))/sum(tab.svm)) ## accuracy
+        
+acc
+```
+
+
+```{r}
+rec <- c(rec.svm = tab.svm[2,2]/(tab.svm[1,2] + tab.svm[2,2]))
+        
+rec
+```
+
+
+```{r}
+prec <- c(prec.svm = tab.svm[2,2]/(tab.svm[2,1] + tab.svm[2,2]))
+
+prec 
+```
+
+```{r}
+
+model.nb <- train(
+                satisfaction ~. -X -id,
+                train,
+                method = "naive_bayes",
+                trControl = trainControl(
+                    method = "cv",
+                    number = 10,
+                  )
+              )
+
+```
+
+
+```{r}
+summary(model.nb)
+```
+
+
+```{r}
+pred.nb <- predict(model.nb, test, 
+                type = "raw")
+pred.nb
+
+```
+
+```{r}
+table.nb <- table(pred.nb, test$satisfaction)
+table.nb
+```
+
+acc <- c(acc.svm = sum(diag(tab.svm))/sum(tab.svm))
+        
+rec <- c(rec.svm = tab.svm[2,2]/(tab.svm[1,2] + tab.svm[2,2]))
+        
+prec <- c(prec.svm = tab.svm[2,2]/(tab.svm[2,1] + tab.svm[2,2]))
+
+```{r}
+
+list_of_tables <- list(table_knn, table_nnet, tab.svm, table_glm, table_tree, table.nb)
+accuracyPrecisionRecall <- function(x) {
+  print(x)
+  print(paste('Accuracy: ', sum(diag(x))/sum(x)))
+  print(paste('Recall: ', x[2,2]/(x[1,2] + x[2,2])))
+  print(paste('Precision: ', x[2,2]/(x[2,1] + x[2,2])))
+}
+
+for (i in list_of_tables) {
+  accuracyPrecisionRecall(i)
+}
 ```
 
 
