@@ -20,16 +20,101 @@ train <- read.csv(file = 'train.csv')
 test <- read.csv(file = 'test.csv')
 ```
 
+```{r}
+#We downloadet the data splitted as train and testdata. We thought that we should bind this two datasets for our first data discovery to see how the data we got looks like and to get
+#a better understanding of the variables.
+data <- rbind(train, test)
+```
 
+```{r}
+head(data)
+```
+
+
+```{r}
+str(data)
+```
+
+
+```{r}
+summary(data)
+```
+
+#To simplify the levels of satisfaction we decided to rename them from 'neutral or dissatisfied' to 'no' and 'satisfied' to 'yes'. Since we cannot detect whether a customer was neutral or not satisfied we will not loose any important information.
+```{r}
+test$satisfaction <-factor(test$satisfaction, levels = c("neutral or dissatisfied", "satisfied"), labels=c("no", "yes"))
+train$satisfaction <- factor(train$satisfaction, levels = c("neutral or dissatisfied", "satisfied"), labels=c("no", "yes"))
+head(train)
+```
+
+
+
+#After summarizing the data we see that we have 393 missing values in 'Arrival.Delay.in.Minutes' so we decided to eliminate the rows containing this missing values in both train and test (da sie nur einen sehr kleinen teil des datensatzes ausmachen).
 ```{r}
 train <- na.omit(train)
 test <- na.omit(test)
+```
+
+```{r}
+plot(data$satisfaction ~ data$Flight.Distance)
+```
+
+
+```{r}
+plot(data$satisfaction ~ data$Baggage.handling)
+```
+
+```{r}
+plot(data$satisfaction ~ data$Inflight.service)
+```
+
+```{r}
+plot(data$satisfaction ~ data$Inflight.entertainment)
+```
+
+```{r}
+plot(data$satisfaction ~ data$Food.and.drink)
+```
+
+```{r}
+plot(data$satisfaction ~ data$Type.of.Travel)
+```
+
+```{r}
+plot(data$satisfaction ~ data$On.board.service)
+```
+
+```{r}
+plot(data$satisfaction ~ data$Seat.comfort)
+```
+
+```{r}
+plot(data$satisfaction ~ data$Cleanliness)
+```
+
+
+```{r}
+boxplot(data$Flight.Distance)
+```
+
+
+```{r}
+boxplot(data$On.board.service, data$Seat.comfort, data$Cleanliness, data$Inflight.service, data$Inflight.entertainment, data$Food.and.drink, data$Baggage.handling)
+# 1= On board service
+# 2= Seat comfort
+# 3= Cleanliness
+# 4= Inflight Service
+# 5= Inflight Entertainment
+# 6= Food and Drink
+# 7= Baggage handling
 ```
 
 
 ```{r}
 train
 ```
+
+
 ```{r}
 test
 ```
@@ -102,15 +187,14 @@ knn_model <- train(satisfaction~. -X -id,
 
 ```{r}
 predicted_knn <- predict(knn_model, test)
-predicted_knn
 ```
 
 
 ```{r}
-sum(is.na(test))
-test$satisfaction
-head(test)
+table_knn <- table(predicted_knn, test$satisfaction)
 ```
+
+
 
 
 
