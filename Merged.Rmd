@@ -33,6 +33,7 @@ head(data)
 str(data)
 ```
 
+
 ```{r}
 summary(data)
 ```
@@ -116,6 +117,9 @@ boxplot(data$Flight.Distance)
 # 6= Food and Drink
 # 7= Baggage handling
 boxplot(data$On.board.service, data$Seat.comfort, data$Cleanliness, data$Inflight.service, data$Inflight.entertainment, data$Food.and.drink, data$Baggage.handling)
+```
+```{r}
+set.seed(4567)
 ```
 
 
@@ -208,6 +212,7 @@ nnet = train(satisfaction~., data = train, method = "nnet", trControl = trainCon
 nnet
 ```
 
+
 ```{r}
 summary(nnet)
 ```
@@ -226,11 +231,11 @@ table_nnet
 
 ```{r}
 svm_tr_control = trainControl(method = "repeatedcv", number = 10,verboseIter = TRUE)
-model.svm <- train(satisfaction ~ . -X -id, train[1:5000, ], method = "svmLinear", trControl = svm_tr_control, na.action = na.pass)
+fit_model.svm <- train(satisfaction ~ . -X -id, train[1:5000, ], method = "svmLinear", trControl = svm_tr_control, na.action = na.pass, metric = 'Accuracy')
 ```
 
 ```{r}
-model.svm
+fit_model.svm
 ```
 
 ```{r}
@@ -301,7 +306,18 @@ table.nb
 confusionMatrix(table.nb)
 ```
 
+```{r}
+model_forest <- train(
+            satisfaction~. -X -id,
+            data = train,
+            method = 'ranger',
+            trControl = tcon
+)
+```
 
+```{r}
+
+```
 
 acc <- c(acc.svm = sum(diag(tab.svm))/sum(tab.svm))
         
@@ -332,10 +348,11 @@ plot(naive_bayes_importance)
 ```
 
 ```{r}
-model.nb2 <- train(
+fit_model.nb2 <- train(
                 satisfaction ~. -X -id -Gender - Departure.Arrival.time.convenient - Departure.Delay.in.Minutes - Arrival.Delay.in.Minutes,
                 train,
                 method = "naive_bayes",
+                metric = 'Accuracy',
                 trControl = trainControl(
                     method = "cv",
                     number = 10,
@@ -345,19 +362,14 @@ model.nb2 <- train(
 
 
 ```{r}
-model.nb2
-```
-```{r}
-```
-
-
-```{r}
+fit_model.nb2
 ```
 
 
 ```{r}
 confusionMatrix(table.nb)
 ```
+
 ```{r}
 predicted_model_nb2 <- predict(model.nb2, test)
 ```
@@ -384,21 +396,26 @@ table_model_nb2 <- table(predicted_model_nb2, test$satisfaction)
 
 confusionMatrix(table_model_nb2)
 ```
-```{r}
 
-install.packages(mlbench)
-library('mlbench')
+
+```{r}
 results <- resamples(list(
-  knn = knn_model,
-  log = glm_model,
-  tree = tree,
-  svm = model.svm,
-  nb = model.nb
+  svm = fit_model.svm,
+  nb = fit_model.nb2
 ))
 ```
 
 ```{r}
-bwplot(results)
+ls()
+```
+
+```{r}
+print(results)
+```
+
+
+```{r}
+confusionMatrix(table_nnet)
 ```
 
 
