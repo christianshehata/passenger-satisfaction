@@ -155,7 +155,7 @@ boxplot(data$On.board.service, data$Seat.comfort, data$Cleanliness, data$Infligh
 set.seed(4567)
 ```
 #Christian 
-#After analyzing the first inspections on our dataset we initiated our further evaluation with a generalized linear model. It fits in linear, logistic regression models and in cases where the response variable has an error distribution that is non-normal. 
+#After analyzing the first inspections on our dataset we initiated our further evaluation with a generalized linear model. It fits in linear, logistic regression models and in cases where the response variable has an error distribution that is non-normal. As we can see, the final values used for the model were alpha = 0.1 and lambda = 0.004989601.
 
 ```{r}
 glm_model <- train(satisfaction~. -X -id, data = train, method = "glmnet", trControl = trainControl(method="cv",number=10), preProcess= c("center", "scale"))
@@ -165,13 +165,12 @@ glm_model
 ```{r}
 plot(glm_model)
 ```
-
+#And now we are using the predict function for our model.
 ```{r}
 predicted_logistic <- predict(glm_model, test)
 ```
 
 ```{r}
-#Table Logistic Regression
 table_glm <- table(predicted_logistic, test$satisfaction)
 table_glm
 ```
@@ -199,14 +198,12 @@ tree <- train(
 plot(tree)
 ```
 
-#Now we are feeding the prediction function with our extracted data.
+#Now we are feeding again the prediction function with our data.
 ```{r}
 predicted_tree <- predict(tree, test)
 ```
 
-
 ```{r}
-#Table Decision Tree
 table_tree <- table(predicted_tree, test$satisfaction)
 table_tree
 ```
