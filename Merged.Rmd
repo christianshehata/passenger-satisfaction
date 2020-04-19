@@ -118,6 +118,8 @@ boxplot(data$Flight.Distance)
 # 7= Baggage handling
 boxplot(data$On.board.service, data$Seat.comfort, data$Cleanliness, data$Inflight.service, data$Inflight.entertainment, data$Food.and.drink, data$Baggage.handling)
 ```
+
+
 ```{r}
 set.seed(4567)
 ```
@@ -125,39 +127,37 @@ set.seed(4567)
 
 ```{r}
 #Model Building Logistic Regression
-glm_model <- train(satisfaction~. -X -id, data = train, method = "glmnet", trControl = trainControl(method="cv",number=10), preProcess= c("center", "scale"))
+model_glm <- train(satisfaction~. -X -id, data = train, method = "glmnet", trControl = trainControl(method="cv",number=10), preProcess= c("center", "scale"))
 ```
-
-
 
 
 
 
 ```{r}
 #plot logistic regression
-plot(glm_model)
+plot(model_glm)
 ```
 
 
 ```{r}
 #Predict Function Logistic Regression
-predicted_logistic <- predict(glm_model, test)
+predicted_glm <- predict(model_glm, test)
 ```
 
 
 ```{r}
 #Table Logistic Regression
-table_glm <- table(predicted_logistic, test$satisfaction)
+table_glm <- table(predicted_glm, test$satisfaction)
 table_glm
 ```
 
 ```{r}
-confusionMatrixLogistic <- confusionMatrix(table_glm)
+confusionMatrix_glm <- confusionMatrix(table_glm)
 ```
 
 ```{r}
 #Model Building Tree
-tree <- train(
+model_tree <- train(
           satisfaction~. -X -id,
           train,
           method = "rpart",
@@ -171,12 +171,12 @@ tree <- train(
 
 ```{r}
 #Plot Decision Tree
-plot(tree)
+plot(model_tree)
 ```
 
 ```{r}
 #Predict Funtion Decision tree
-predicted_tree <- predict(tree, test)
+predicted_tree <- predict(model_tree, test)
 ```
 
 
@@ -187,14 +187,14 @@ table_tree
 ```
 
 ```{r}
-confusionMatrixTree <- confusionMatrix(table_tree)
+confusionMatrix_tree <- confusionMatrix(table_tree)
 ```
 
 
 ```{r}
 #KNN 
 tcon <- trainControl(method = 'cv', number = 10, verboseIter = TRUE)
-knn_model <- train(satisfaction~. -X -id,
+model_knn <- train(satisfaction~. -X -id,
                    train,
                    method = 'knn',
                    trControl = tcon
@@ -202,12 +202,12 @@ knn_model <- train(satisfaction~. -X -id,
 ```
 
 ```{r}
-summary(knn_model)
+summary(model_knn)
 ```
 
 
 ```{r}
-predicted_knn <- predict(knn_model, test)
+predicted_knn <- predict(model_knn, test)
 predicted_knn
 ```
 
@@ -215,93 +215,75 @@ predicted_knn
 table_knn <- table(predicted_knn, test$satisfaction)
 table_knn
 ```
+
 ```{r}
-confusionMatrixKNN <- confusionMatrix(table_knn)
+confusionMatrix_knn <- confusionMatrix(table_knn)
 ```
 
 
 ```{r}
-nnet = train(satisfaction~. -X -id, data = train, method = "nnet", trControl = trainControl(method="cv",number=10))
+model_nnet = train(satisfaction~. -X -id, data = train, method = "nnet", trControl = trainControl(method="cv",number=10))
 ```
 
 ```{r}
-nnet
-```
-
-
-```{r}
-summary(nnet)
+model_nnet
 ```
 
 
 ```{r}
-pred_nnet <- predict(nnet, test)
-pred_nnet
+summary(model_nnet)
 ```
 
 
 ```{r}
-table_nnet <- table(pred_nnet, test$satisfaction)
+predicted_nnet <- predict(model_nnet, test)
+predicted_nnet
+```
+
+
+```{r}
+table_nnet <- table(predicted_nnet, test$satisfaction)
 table_nnet
 ```
 
 ```{r}
-confusionMatrixNNET <- confusionMatrix(table_nnet)
+confusionMatrix_nnet <- confusionMatrix(table_nnet)
 ```
 
 
 ```{r}
 svm_tr_control = trainControl(method = "repeatedcv", number = 10,verboseIter = TRUE)
-fit_model.svm <- train(satisfaction ~ . -X -id, train[1:5000, ], method = "svmLinear", trControl = svm_tr_control, na.action = na.pass, metric = 'Accuracy')
+model_svm <- train(satisfaction ~ . -X -id, train[1:5000, ], method = "svmLinear", trControl = svm_tr_control, na.action = na.pass, metric = 'Accuracy')
 ```
 
 ```{r}
-fit_model.svm
+model_svm
 ```
 
 ```{r}
-summary(model.svm)
-```
-
-
-```{r}
-pred.svm <- predict(model.svm, test)
+summary(model_svm)
 ```
 
 
 ```{r}
-tab.svm <- table(pred.svm, test$satisfaction)
-tab.svm
-```
-
-```{r}
-confusionMatrixSVM <- confusionMatrix(tab.svm)
+predicted_svm <- predict(model_svm, test)
 ```
 
 
 ```{r}
-acc <- c(acc.svm = sum(diag(tab.svm))/sum(tab.svm)) ## accuracy
-        
-acc
-```
-
-
-```{r}
-rec <- c(rec.svm = tab.svm[2,2]/(tab.svm[1,2] + tab.svm[2,2]))
-        
-rec
-```
-
-
-```{r}
-prec <- c(prec.svm = tab.svm[2,2]/(tab.svm[2,1] + tab.svm[2,2]))
-
-prec 
+table_svm <- table(predicted_svm, test$satisfaction)
+table_svm
 ```
 
 ```{r}
+confusionMatrix_svm <- confusionMatrix(table_svm)
+```
 
-model.nb <- train(
+
+
+```{r}
+
+model_nb <- train(
                 satisfaction ~. -X -id,
                 train,
                 method = "naive_bayes",
@@ -315,23 +297,24 @@ model.nb <- train(
 
 
 ```{r}
-summary(model.nb)
+summary(model_nb)
 ```
 
 
 ```{r}
-pred.nb <- predict(model.nb, test, 
+predicted_nb <- predict(model_nb, test, 
                 type = "raw")
-pred.nb
+predicted_nb
 
 ```
 
 ```{r}
-table.nb <- table(pred.nb, test$satisfaction)
-table.nb
+table_nb <- table(predicted_nb, test$satisfaction)
+table_nb
 ```
+
 ```{r}
-confusionMatrixNV <- confusionMatrix(table.nb)
+confusionMatrix_nb <- confusionMatrix(table_nb)
 ```
 
 
@@ -364,14 +347,9 @@ table_forest
 ```
 
 ```{r}
-confusionMatrixForest <- confusionMatrix(table_forest)
+confusionMatrix_forest <- confusionMatrix(table_forest)
 ```
 
-acc <- c(acc.svm = sum(diag(tab.svm))/sum(tab.svm))
-        
-rec <- c(rec.svm = tab.svm[2,2]/(tab.svm[1,2] + tab.svm[2,2]))
-        
-prec <- c(prec.svm = tab.svm[2,2]/(tab.svm[2,1] + tab.svm[2,2]))
 
 ```{r}
 # install.packages('caTools')
@@ -381,8 +359,8 @@ prec <- c(prec.svm = tab.svm[2,2]/(tab.svm[2,1] + tab.svm[2,2]))
 
 
 ```{r}
-list_of_tables <- list(table_knn, table_nnet, tab.svm, table_glm, table_tree, table.nb, table_forest)
-list_of_pred <- list(predicted_knn, pred_nnet, pred.svm, predicted_logistic, predicted_tree, pred.nb)
+list_of_tables <- list(table_knn, table_nnet, table_svm, table_glm, table_tree, table_nb, table_forest)
+list_of_pred <- list(predicted_knn, predicted_nnet, predicted_svm, predicted_logistic, predicted_tree, predicted_nb)
 factor_satisfaction <- factor(test$satisfaction)
 confusionMatrixModels <- list()
 
@@ -401,10 +379,6 @@ modelNames <- function() {
 modelNames()
 ```
 
-```{r}
-list_confusion_matrixes <- 
-```
-
 
 ```{r}
 naive_bayes_importance <- varImp(model.nb)
@@ -412,7 +386,7 @@ plot(naive_bayes_importance)
 ```
 
 ```{r}
-fit_model.nb2 <- train(
+model_nb2 <- train(
                 satisfaction ~. -X -id -Gender - Departure.Arrival.time.convenient - Departure.Delay.in.Minutes - Arrival.Delay.in.Minutes,
                 train,
                 method = "naive_bayes",
@@ -426,21 +400,21 @@ fit_model.nb2 <- train(
 
 
 ```{r}
-fit_model.nb2
+model_nb2
 ```
 
 
 ```{r}
-confusionMatrix(table.nb)
+confusionMatrix(table_nb)
 ```
 
 ```{r}
-predicted_model_nb2 <- predict(model.nb2, test)
+predicted_nb2 <- predict(model_nb2, test)
 ```
 
 
 ```{r}
-table_model_nb2 <- table(predicted_model_nb2, test$satisfaction)
+table_nb2 <- table(predicted_nb2, test$satisfaction)
 ```
 
 ```{r}
@@ -458,29 +432,20 @@ table_model_nb2 <- table(predicted_model_nb2, test$satisfaction)
 #   satisfied                                  2524     10535
 
 
-confusionMatrix(table_model_nb2)
+confusionMatrix(table_nb2)
 ```
 
 
-```{r}
-results <- resamples(list(
-  svm = fit_model.svm,
-  nb = fit_model.nb2
-))
-```
 
 ```{r}
 ls()
-```
-
-```{r}
-print(results)
 ```
 
 
 ```{r}
 confusionMatrix(table_nnet)
 ```
+
 ```{r}
 install.packages("caTools")
 
@@ -491,15 +456,16 @@ library(caTools)
 ```
 
 ```{r}
-colAUC(as.numeric(pred.nb),test$satisfaction, plotROC= TRUE )
+colAUC(as.numeric(predicted_nb),test$satisfaction, plotROC= TRUE )
 ```
 
 
 ```{r}
 colAUC(as.numeric(predicted_knn),test$satisfaction, plotROC= TRUE )
 ```
+
 ```{r}
-colAUC(as.numeric(predicted_logistic),test$satisfaction, plotROC= TRUE )
+colAUC(as.numeric(predicted_glm),test$satisfaction, plotROC= TRUE )
 ```
 
 
@@ -509,45 +475,48 @@ colAUC(as.numeric(predicted_tree),test$satisfaction, plotROC= TRUE )
 
 
 ```{r}
-colAUC(as.numeric(pred.svm),test$satisfaction, plotROC= TRUE )
+colAUC(as.numeric(predicted_svm),test$satisfaction, plotROC= TRUE )
 ```
+
 ```{r}
-colAUC(as.numeric(pred_nnet),test$satisfaction, plotROC= TRUE )
+colAUC(as.numeric(predicted_nnet),test$satisfaction, plotROC= TRUE )
 ```
+
 ```{r}
 colAUC(as.numeric(predicted_forest),test$satisfaction, plotROC= TRUE )
 ```
+
 ```{r}
-forest_accuracy <- confusionMatrixForest$overall["Accuracy"]
+forest_accuracy <- confusionMatrix_forest$overall["Accuracy"]
 ```
 
 ```{r}
-knn_accuracy <- confusionMatrixKNN$overall["Accuracy"]
+knn_accuracy <- confusionMatrix_knn$overall["Accuracy"]
 ```
 
 ```{r}
-logistic_accuracy <- confusionMatrixLogistic$overall["Accuracy"]
+glm_accuracy <- confusionMatrix_glm$overall["Accuracy"]
 ```
 
 ```{r}
-nnet_accuracy <- confusionMatrixNNET$overall["Accuracy"]
+nnet_accuracy <- confusionMatrix_nnet$overall["Accuracy"]
 ```
 
 
 ```{r}
-svm_accuracy <- confusionMatrixSVM$overall["Accuracy"]
+svm_accuracy <- confusionMatrix_svm$overall["Accuracy"]
 ```
 
 ```{r}
-tree_accuracy <- confusionMatrixTree$overall["Accuracy"]
+tree_accuracy <- confusionMatrix_tree$overall["Accuracy"]
 ```
 
 ```{r}
-nv_accuracy <- confusionMatrixNV$overall["Accuracy"]
+nb_accuracy <- confusionMatrix_nb$overall["Accuracy"]
 ```
 
 ```{r}
-list_of_matrixes <- list(forest_accuracy, knn_accuracy, logistic_accuracy, nnet_accuracy, svm_accuracy, tree_accuracy, nv_accuracy)
+list_of_matrixes <- list(forest_accuracy, knn_accuracy, glm_accuracy, nnet_accuracy, svm_accuracy, tree_accuracy, nb_accuracy)
 ```
 
 
@@ -561,7 +530,7 @@ library(ggplot2)
 
 ```{r}
 dataOfModels <- data.frame(
-  models=c("Forest","KNN","Logistic","NNET","SVM","Tree", "NB") ,  
+  models=c("Forest","KNN","GLM","NNET","SVM","Tree", "NB") ,  
   accuracy=as.numeric(list_of_matrixes)
   )
 ```
