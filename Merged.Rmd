@@ -3,11 +3,10 @@ title: "R Notebook"
 output: html_notebook
 ---
 ##Introduction
-# # As Students of the university of economics in vienna have to be aware of dilemmas that can face any business. Being able to judge a situation facing a company correctly and act accordingly is one of our most important tasks as future graduates. Through this course we have learned many ways to analyze a companies data and make predictions for future scenarios.
+# As Students of the university of economics in Vienna we have to be aware of dilemmas that can face any business. Being able to judge a situation facing a company correctly and act accordingly is one of our most important tasks as future graduates. Through this course we have learned many ways to analyze a companies data and make predictions for future scenarios
 
-#Starting this project thought of different circumstances threatening a company and coming up proper analyzing methods and a way to predict an outcome. One of the biggest factors influencing a company's future is customer Satisfaction. For a business to keep its customer's satisfaction level high or at least stable is no easy task. To get a better look on what issues can influence the satisfaction level, We concentrated on random and anonymous airlines from a dataset provided by kaggle. we further trained our models thru different methods to be able to make a solid prediction for future use.
+#Starting this project we thought of different circumstances threatening a company and coming up proper analyzing methods and a way to predict an outcome. One of the biggest factors influencing a company's future is customer satisfaction. For a business to keep its customer's satisfaction level high or at least stable is no easy task. Our goal is to identify and understand the factors that can influence the satisfaction level. Furthermore we expanded our research in training our model to different methods to find out, whether the prediction of customer satisfaction is possible or not and if so, what method could prove to be the optimal one for future use.
 
-#Starting this project thought of different circumstances threatening a company and coming up proper analyzing methods and a way to predict an outcome. One of the biggest factors influencing a company's future is customer Satisfaction. For a business to keep its customer's satisfaction level high or at least stable is no easy task. To get a better look on what issues can influence the satisfaction level, We concentrated on random and anonymous airlines from a dataset provided by kaggle. we further trained our models thru different methods to be able to make a solid prediction for future use.
 
 ###Variable Declaration
 Gender: Gender of the passengers (Female, Male)
@@ -38,7 +37,9 @@ Satisfaction: Airline satisfaction level(Satisfaction, neutral or dissatisfactio
 ```{r}
 library(caret)
 library(ggplot2)
+library(caTools)
 ```
+
 
 ```{r}
 train <- read.csv(file = 'train.csv')
@@ -48,7 +49,6 @@ test <- read.csv(file = 'test.csv')
 ```{r}
 #We downloaded the data splitted as train and test data. We thought that we should bind this two datasets for our first data discovery to see how the data we got looks like and to get a better understanding of the variables.
 data <- rbind(train, test)
-
 ```
 
 ```{r}
@@ -59,11 +59,9 @@ head(data)
 str(data)
 ```
 
-
 ```{r}
 summary(data)
 ```
-
 
 ```{r}
 #After summarizing the data we see that we have 393 missing values in 'Arrival.Delay.in.Minutes' so we decided to eliminate the rows containing this missing values in both train and test (da sie nur einen sehr kleinen teil des datensatzes ausmachen).
@@ -74,19 +72,16 @@ test <- na.omit(test)
 
 ```{r}
 #To simplify the levels of satisfaction we decided to rename them from 'neutral or dissatisfied' to 'no' and 'satisfied' to 'yes'. Since we cannot detect whether a customer was neutral or not satisfied we will not miss any important information.
-test$satisfaction <-factor(test$satisfaction, levels = c("neutral or dissatisfied", "satisfied"), labels=c("no", "yes"))
-train$satisfaction <- factor(train$satisfaction, levels = c("neutral or dissatisfied", "satisfied"), labels=c("no", "yes"))
+#test$satisfaction <-factor(test$satisfaction, levels = c("neutral or dissatisfied", "satisfied"), labels=c("no", "yes"))
+#train$satisfaction <- factor(train$satisfaction, levels = c("neutral or dissatisfied", "satisfied"), labels=c("no", "yes"))
 
 ```
 
-```{r}
-head(train)
-```
-#to get a first look on how the different variables interact with our satisfaction variable, we created some barchart to visualize their relationship. In first graph put flight distance with our response variable. It looks like the longer the flight distance the more satisfied were the customers.
+#To get a first look on how the different variables interact with our satisfaction variable, we created some barchart to visualize their relationship. In first graph put flight distance with our response variable. It looks like the longer the flight distance the more satisfied were the customers.
 
-#the following variabele (Baggage.handling, Inflight.service, Inflight.entertainment, Food.and.drink, On.board.service, Seat.comfort, Cleanliness) have very similar graphs. customers tend to be satisfied more, when the service they recieve  meet their expectations.
+#The following variabele (Baggage.handling, Inflight.service, Inflight.entertainment, Food.and.drink, On.board.service, Seat.comfort, Cleanliness) have very similar graphs. Customers tend to be satisfied more, when the service they recieve  meet their expectations.
 
-#looking at the Type.of.Travel we saw that most of the customers are business travellers and tend to be more satisfied with their flight experience. one reason could be that business travellers fly more often and tend to have a different mindset than others.
+#Looking at the Type.of.Travel we saw that most of the customers are business travellers and tend to be more satisfied with their flight experience. One reason could be that business travellers fly more often and tend to have a different mindset than others.
 
 ```{r}
 plot(data$satisfaction ~ data$Flight.Distance)
@@ -128,11 +123,11 @@ plot(data$satisfaction ~ data$Seat.comfort)
 
 ```
 
-
 ```{r}
 plot(data$satisfaction ~ data$Cleanliness)
 ```
-These boxplots deliver a better visualization of the variables. Most of these plots show a rather positive result. all the shown graphs except cleanliness and food and Drink have a mean of 4. interestingly the boxplots on board service and inflight Entertainment are identical with the mean equalling the 3rd quantile.
+
+#These boxplots deliver a better visualization of the variables. Most of these plots show a rather positive result. all the shown graphs except cleanliness and food and Drink have a mean of 4. interestingly the boxplots on board service and inflight Entertainment are identical with the mean equalling the 3rd quantile.
 
 ```{r}
 boxplot(data$Flight.Distance)
@@ -149,40 +144,38 @@ boxplot(data$Flight.Distance)
 boxplot(data$On.board.service, data$Seat.comfort, data$Cleanliness, data$Inflight.service, data$Inflight.entertainment, data$Food.and.drink, data$Baggage.handling)
 ```
 
-
-
 ```{r}
 set.seed(4567)
 ```
-#Christian 
-#After analyzing the first inspections on our dataset we initiated our further evaluation with a generalized linear model. It fits in linear, logistic regression models and in cases where the response variable has an error distribution that is non-normal. As we can see, the final values used for the model were alpha = 0.1 and lambda = 0.004989601.
+
+#After analyzing the first inspections on our dataset we initiated our further evaluation with a generalized linear model. It fits in linear, logistic regression models and in cases where the response variable has an error distribution that is non-normal. As we can see, the final values used for the model were alpha = 0.1 and lambda = 0.004989601 and the accuracy 0.8750121. When choosing a lambda value, the goal is to find the balance between simplicity and training data fit. Can be between 0 and 1 whereas it never can be exactly 0. If the lambda value is pretty high, the risk of underfitting may occur. Else, our model will become extreme complex and overfitting is a potential risk factor. 
 
 ```{r}
-glm_model <- train(satisfaction~. -X -id, data = train, method = "glmnet", trControl = trainControl(method="cv",number=10), preProcess= c("center", "scale"))
-glm_model
+model_glm <- train(satisfaction~. -X -id, data = train, method = "glmnet", trControl = trainControl(method="cv",number=10), preProcess= c("center", "scale"))
+model_glm
 ```
+
 #Here we have a nice visualisation of our model. 
 ```{r}
-plot(glm_model)
-```
-#And now we are using the predict function for our model.
-```{r}
-predicted_logistic <- predict(glm_model, test)
+plot(model_glm)
 ```
 
 ```{r}
-table_glm <- table(predicted_logistic, test$satisfaction)
+predicted_glm <- predict(glm_model, test)
+```
+
+```{r}
+table_glm <- table(predicted_glm, test$satisfaction)
 table_glm
 ```
 
 ```{r}
-confusionMatrixLogistic <- confusionMatrix(table_glm)
+confusionMatrix_glm <- confusionMatrix(table_glm)
+confusionMatrix_glm
 ```
-#So the decision tree belongs to the tree-based classification methods. The are not just solving classification problems, but also regression problems. Important here to mention is that we just use one predictor at a node as a splitting variable.
-
+#So the decision tree belongs to the tree-based classification methods. The are not just solving classification problems, but also regression problems. Important here to mention is that we just use one predictor at a node as a splitting variable. 
 ```{r}
-#Model Building Tree
-tree <- train(
+model_tree <- train(
           satisfaction~. -X -id,
           train,
           method = "rpart",
@@ -195,7 +188,7 @@ tree <- train(
 #We obtained here an accuracy of 85% which is really good.
 
 ```{r}
-plot(tree)
+plot(model_tree)
 ```
 
 #Now we are feeding again the prediction function with our data.
@@ -209,22 +202,23 @@ table_tree
 ```
 
 ```{r}
-confusionMatrixTree <- confusionMatrix(table_tree)
+confusionMatrix_tree <- confusionMatrix(table_tree)
 ```
 
 
+
 ```{r}
-#KNN 
 tcon <- trainControl(method = 'cv', number = 10, verboseIter = TRUE)
-knn_model <- train(satisfaction~. -X -id,
+model_knn <- train(satisfaction~. -X -id,
                    train,
                    method = 'knn',
                    trControl = tcon
                    )
 ```
 
+
 ```{r}
-summary(knn_model)
+summary(model_knn)
 ```
 
 
@@ -237,48 +231,56 @@ predicted_knn
 table_knn <- table(predicted_knn, test$satisfaction)
 table_knn
 ```
+
 ```{r}
-confusionMatrixKNN <- confusionMatrix(table_knn)
+confusionMatrix_knn <- confusionMatrix(table_knn)
+confusionMatrix_knn
+```
+
+#As already noted in the results presentation, neural network training yields random prediction models, due to randomization and greediness of training algorithm. Such greedy optimization will efficiently find a local minimum of the cost function, however, there is no guarantee that the resulting local minimum will be any close to the global minimum of the cost function.
+
+#At the moment, instead of relying upon a single training session, we would carry out the process iteratively with predetermined timeout. This way, we can attempt to obtain a result exceeding the given accuracy threshold in feasible computing time. The best configuration should be cached and used as fallback in case the desired threshold is not reached. Important to mention is, that every time the neurons' biases are newly randomized, so that we find a model of possibly best model (within given resources, that is) without feeding the model with excessive volume of training data and thus, running into risk of overfitting.
+
+#Further, as our visualisation has shown, some high-weighted hidden layer neurons were discarded by the output neuron. We suspect it to be an anomaly, for we do not think it makes real world sense (especially in case of flight delays, that are likely to enormously frustrate the passengers). Our prior training attempts resulted in much higher accuracy of 80-90%, yet we did not investigate the results closely to conclude it as the reason. However, we expect that adding one hidden layer may be a remedy to this problem.
+
+```{r}
+model_nnet = train(satisfaction~. -X -id, data = train, method = "nnet", trControl = trainControl(method="cv",number=10))
+```
+
+```{r}
+model_nnet
 ```
 
 
 ```{r}
-nnet = train(satisfaction~. -X -id, data = train, method = "nnet", trControl = trainControl(method="cv",number=10))
-```
-
-```{r}
-nnet
+summary(model_nnet)
 ```
 
 
 ```{r}
-summary(nnet)
+predicted_nnet <- predict(model_nnet, test)
+predicted_nnet
 ```
 
 
 ```{r}
-pred_nnet <- predict(nnet, test)
-pred_nnet
-```
-
-
-```{r}
-table_nnet <- table(pred_nnet, test$satisfaction)
+table_nnet <- table(predicted_nnet, test$satisfaction)
 table_nnet
 ```
 
 ```{r}
-confusionMatrixNNET <- confusionMatrix(table_nnet)
+confusionMatrix_nnet <- confusionMatrix(table_nnet)
 ```
-
+#A support vector machine divides a set of data into classes in such a way that the broadest possible area remains free of data.The support vector machine is a so called large margin classifier. The SVM does this by finding hyper-planes to divide the data into classes.This classes are used to predict.We are using the methos "svmlinear" method calculates predictions by looking in which class the new data contains. SvmLinear builds linear hyper planes for this. Other svm methods can use other geometrical options. We used the caret package cross validation to divide the dataset into 10 folds to train the model 10 different times with the different folds.CV uses 9 of the 10 fold to create new train sets and evualate the submodels with new unknown folds. We excluded the variables "X" and "id" because they are not helpfull for our prediction model. SVM has difficults to handle missing values, but we ommited the missing values so this will be no problem.
 
 ```{r}
 svm_tr_control = trainControl(method = "repeatedcv", number = 10,verboseIter = TRUE)
-fit_model.svm <- train(satisfaction ~ . -X -id, train[1:5000, ], method = "svmLinear", trControl = svm_tr_control, na.action = na.pass, metric = 'Accuracy')
+model_svm <- train(satisfaction ~ . -X -id, train[1:5000, ], method = "svmLinear", trControl = svm_tr_control, na.action = na.pass, metric = 'Accuracy')
 ```
-
+#The training with the full dataset was a huge challenge for our hardware ressources but we found out, that we do not need to train the model with the full dataset. A small excerpt of the original dataset delivers similarly good results.
+#We can see that the accuracy of our SVM Model is high, this is good for balanced dataset like our Customer airline satisfaction data. If the Dataset would not be so balanced we should use the Kappa value. For example a dataset with about 70 neutral or unsatisfied an 30% satisfied. Kappa is the normalized accuracy.
 ```{r}
-fit_model.svm
+model_svm
 ```
 
 ```{r}
@@ -287,43 +289,23 @@ summary(model.svm)
 
 
 ```{r}
-pred.svm <- predict(model.svm, test)
+predicted_svm <- predict(model_svm, test)
 ```
 
 
 ```{r}
-tab.svm <- table(pred.svm, test$satisfaction)
-tab.svm
+table_svm <- table(predicted_svm, test$satisfaction)
+table_svm
 ```
 
 ```{r}
-confusionMatrixSVM <- confusionMatrix(tab.svm)
+confusionMatrixSVM <- confusionMatrix(table_svm)
 ```
-
-
-```{r}
-acc <- c(acc.svm = sum(diag(tab.svm))/sum(tab.svm)) ## accuracy
-        
-acc
-```
-
-
-```{r}
-rec <- c(rec.svm = tab.svm[2,2]/(tab.svm[1,2] + tab.svm[2,2]))
-        
-rec
-```
-
-
-```{r}
-prec <- c(prec.svm = tab.svm[2,2]/(tab.svm[2,1] + tab.svm[2,2]))
-
-prec 
-```
+#The Dataset is relative balanced so we can use the accuracy as measurement for the perfomance of our models. The SVM Model reaches a accuracy about 87%, with only 5000rows of the data (less than 5% of our dataset). It is also to mention that the sensitivity of our model (true positive rate) is nearly 91%, so the chance that a predicted satisfied customer is realy satisfied is quite high.
 
 ```{r}
 
-model.nb <- train(
+model_nb <- train(
                 satisfaction ~. -X -id,
                 train,
                 method = "naive_bayes",
@@ -337,30 +319,31 @@ model.nb <- train(
 
 
 ```{r}
-summary(model.nb)
+summary(model_nb)
 ```
 
 
 ```{r}
-pred.nb <- predict(model.nb, test, 
+predicted_nb <- predict(model_nb, test, 
                 type = "raw")
-pred.nb
-
+predicted_nb
 ```
 
 ```{r}
-table.nb <- table(pred.nb, test$satisfaction)
-table.nb
-```
-```{r}
-confusionMatrixNV <- confusionMatrix(table.nb)
+table_nb <- table(predicted_nb, test$satisfaction)
+table_nb
 ```
 
+```{r}
+confusionMatrix_nb <- confusionMatrix(table_nb)
+```
+#As we wrote before we fear that our decision tree overfitted on the training data so as a countermeasure we tried to use the randomforest model 'ranger'(for which we heard that it is faster that the 'randomForest') from the caret package. A random forest has a lower risk of overfitting due to the fact that it generates more decision trees by only considering a random subset of variables at each step. This gave us surprisingly good results given the fact that the classifiers in the dataset are pretty evenly distributed and the accuracy of the random forest is around 0.96. We learned that this is one of the most powerful classification models but we didn't expect such a performance using only the default parameters.
 
+#As already mentioned a random forest model generates multiple trees using smaller subsets of the variables so that every tree in the forest diverse from the others. Generating this diversity makes random forests so powerful in predicting as the smaller trees reflect some subtle outcomes that one tree is not able to. After the smaller trees have been generated when we want to classify a row of variables for example this variables will run through all trees in the model and the outcome for each tree will be predicted and be accounted for each step. The last step for classification is then to look which classifier has gotten the most votes in this process and then the random forest will classify based on the most voted outcome (this principles are called ensembled methods).
+
+#To be honest we were not so sure how to tune the paramaters since we have read that more knowledge is required, we did not control gridding the forest. Another problem that occurs is that the model which took most of the runtime (around 1,5 hours). So we had no time to test different approaches because we probably would have increased the runtime and then would have spent too much time on waiting.
 
 ```{r}
-# install.packages('ranger')
-# library('ranger')
 model_forest <- train(
             satisfaction~. -X -id,
             data = train,
@@ -371,7 +354,6 @@ model_forest <- train(
 
 ```{r}
 model_forest
-
 ```
 
 
@@ -386,30 +368,19 @@ table_forest
 ```
 
 ```{r}
-confusionMatrixForest <- confusionMatrix(table_forest)
-```
-
-acc <- c(acc.svm = sum(diag(tab.svm))/sum(tab.svm))
-        
-rec <- c(rec.svm = tab.svm[2,2]/(tab.svm[1,2] + tab.svm[2,2]))
-        
-prec <- c(prec.svm = tab.svm[2,2]/(tab.svm[2,1] + tab.svm[2,2]))
-
-```{r}
-# install.packages('caTools')
-# library(caTools)
-
+confusionMatrix_forest <- confusionMatrix(table_forest)
 ```
 
 
+#Here we are iterating through the confusionMatrixModels in a pretty straightforward way.
 ```{r}
-list_of_tables <- list(table_knn, table_nnet, tab.svm, table_glm, table_tree, table.nb, table_forest)
-list_of_pred <- list(predicted_knn, pred_nnet, pred.svm, predicted_logistic, predicted_tree, pred.nb)
+list_of_tables <- list(table_knn, table_nnet, tab_svm, table_glm, table_tree, table_nb, table_forest)
+list_of_pred <- list(predicted_knn, predicted_nnet, predicted_svm, predicted_logistic, predicted_tree, predicted_nb)
 factor_satisfaction <- factor(test$satisfaction)
 confusionMatrixModels <- list()
 
 
-modelNames <- function() {
+confusionMatrixList <- function() {
     for (j in list_of_tables) {
        confusionMatrixModels <- confusionMatrix(j)
       print(confusionMatrixModels, digits = 8)
@@ -420,98 +391,14 @@ modelNames <- function() {
 ```
 
 ```{r}
-modelNames()
-```
-
-```{r}
-list_confusion_matrixes <- 
+confusionMatrixList()
 ```
 
 
-```{r}
-naive_bayes_importance <- varImp(model.nb)
-plot(naive_bayes_importance)
-```
-
-```{r}
-fit_model.nb2 <- train(
-                satisfaction ~. -X -id -Gender - Departure.Arrival.time.convenient - Departure.Delay.in.Minutes - Arrival.Delay.in.Minutes,
-                train,
-                method = "naive_bayes",
-                metric = 'Accuracy',
-                trControl = trainControl(
-                    method = "cv",
-                    number = 10,
-                  )
-              )
-```
 
 
-```{r}
-fit_model.nb2
-```
 
-
-```{r}
-confusionMatrix(table.nb)
-```
-
-```{r}
-predicted_model_nb2 <- predict(model.nb2, test)
-```
-
-
-```{r}
-table_model_nb2 <- table(predicted_model_nb2, test$satisfaction)
-```
-
-```{r}
-#      Sensitivity : 0.8263                 
-   #          Specificity : 0.9270                 
-   #       Pos Pred Value : 0.9353                 
-   #       Neg Pred Value : 0.8067                 
-   #           Prevalence : 0.5611                 
-   #       Detection Rate : 0.4636                 
-   # Detection Prevalence : 0.4957                 
-   #    Balanced Accuracy : 0.8766  
-# 
-# pred.nb                   neutral or dissatisfied satisfied
-#   neutral or dissatisfied                   12004       830
-#   satisfied                                  2524     10535
-
-
-confusionMatrix(table_model_nb2)
-```
-
-
-```{r}
-results <- resamples(list(
-  svm = fit_model.svm,
-  nb = fit_model.nb2
-))
-```
-
-```{r}
-ls()
-```
-
-```{r}
-print(results)
-```
-
-
-```{r}
-confusionMatrix(table_nnet)
-```
-```{r}
-install.packages("caTools")
-
-```
-
-```{r}
-library(caTools)
-```
-
+#Next we are plotting ROC curves for each model.  
 ```{r}
 colAUC(as.numeric(pred.nb),test$satisfaction, plotROC= TRUE )
 ```
@@ -520,6 +407,8 @@ colAUC(as.numeric(pred.nb),test$satisfaction, plotROC= TRUE )
 ```{r}
 colAUC(as.numeric(predicted_knn),test$satisfaction, plotROC= TRUE )
 ```
+
+
 ```{r}
 colAUC(as.numeric(predicted_logistic),test$satisfaction, plotROC= TRUE )
 ```
@@ -533,12 +422,18 @@ colAUC(as.numeric(predicted_tree),test$satisfaction, plotROC= TRUE )
 ```{r}
 colAUC(as.numeric(pred.svm),test$satisfaction, plotROC= TRUE )
 ```
+
 ```{r}
 colAUC(as.numeric(pred_nnet),test$satisfaction, plotROC= TRUE )
 ```
+
 ```{r}
 colAUC(as.numeric(predicted_forest),test$satisfaction, plotROC= TRUE )
 ```
+
+
+
+#Here we are preparing the variables which belong to a specific parameter in each model: Accuracy
 ```{r}
 forest_accuracy <- confusionMatrixForest$overall["Accuracy"]
 ```
@@ -554,7 +449,7 @@ logistic_accuracy <- confusionMatrixLogistic$overall["Accuracy"]
 ```{r}
 nnet_accuracy <- confusionMatrixNNET$overall["Accuracy"]
 ```
-
+#We can already detect that our neural net scored pretty bad in comparison to our other models.
 
 ```{r}
 svm_accuracy <- confusionMatrixSVM$overall["Accuracy"]
@@ -572,12 +467,8 @@ nv_accuracy <- confusionMatrixNV$overall["Accuracy"]
 list_of_matrixes <- list(forest_accuracy, knn_accuracy, logistic_accuracy, nnet_accuracy, svm_accuracy, tree_accuracy, nv_accuracy)
 ```
 
-
 ```{r}
 as.numeric(list_of_matrixes)
-```
-
-```{r}
 ```
 
 ```{r}
@@ -591,9 +482,52 @@ dataOfModels <- data.frame(
 ```{r}
 ggplot(dataOfModels, aes(x=models, y=accuracy)) + 
   geom_bar(stat = "identity", color="blue", fill=rgb(0.1,0.4,0.5,0.7))
+```
+#As plotted in the barchart above, our forest model scored the best with an accuracy of almost 1. Unfortunately our neural net is nearby 50% (which is the worst score this model can have). The other models accomplished an average score.
 
+
+```{r}
+ls()
 ```
 
+```{r}
+svm_importance <- varImp(model_svm)
+plot(naive_bayes_importance)
+```
+#As shown in the Feature Selection Graph, if we where to counsel a company on their business model we would advise it to prioritize their online boarding service. Hence, focusing on expanding either similar features or improving on their already existing service. Even Marketing strategies could build on the good impression online boarding makes.
+#The following factors are in descending priority for customer satisfaction: The flight class does seem to play significant role. Inflight entertainment could also yield the base for various marketing strategies due to its high significance. Business travellers on average are more satisfied than personal travellers.
+#Ease.of.Online.booking:
+#At first glance the ease of online booking does not seems relevant compared to other observations. However, this could easily be a survivor’s bias, since dissatisfied customers would not even book a flight to begin with and are therefore not included in the statistic. Saying that online booking is irrelevant is ignorant and might even have negative effects if neglected.
+
+
+
+```{r}
+testnewsatisfaction<-function (var1="Cleanliness",var2=NULL, var3=NULL, var4=NULL, var5=NULL, numCustomers=10, newvsatisfaction=5, model=model_nb){
+set.seed(1500)
+shuffle <- sample(nrow(test))
+testCustomer <- test[shuffle[1:numCustomers],]
+print(testCustomer)
+for (i in 1:nrow(testCustomer)) {
+  testCustomer[i,var1]<-newvsatisfaction
+  testCustomer[i,var2]<-newvsatisfaction
+  testCustomer[i,var3]<-newvsatisfaction
+  testCustomer[i,var4]<-newvsatisfaction
+  testCustomer[i,var5]<-newvsatisfaction
+}
+pcnew <-predict(model, testCustomer, 
+                type = "raw")
+testCustomer$satisfactionNew1<-pcnew
+return(testCustomer)
+}
+testnewsatisfaction(var1="Inflight.service", var2="Cleanliness")
+```
+#Back to our origin research question we created a function which applies our models in order to evaluate if one or even more answers are important for our target variable (satisfaction)
+
+# First question: What factors are highly correlated to a satisfied passenger? 
+# Answer: Online-Boarding, Class, Inflight Entertainment  
+
+# Second quesiton: How good can you predict passenger satisfaction?
+# Answer: Applying the random forest model for our prediction we obtained bright results.
 
 
 
