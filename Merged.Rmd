@@ -204,7 +204,7 @@ table_tree
 ```{r}
 confusionMatrix_tree <- confusionMatrix(table_tree)
 ```
-
+#The k Nearest Neighbors is a supervised machine learning algorithm used for classification. In fact k-NN is not a process where a prediction model is established, instead, new data points are compared to current content and depending on the classified neighbors this new data will be assigned to a class. The k in the name of this machine learning algorithm is the number of the nearest neighbors chosen for the best classification. What we do here is cross-validating with 10 folds in order to try different parameters to determine the best k. After training on the train dataset it chose k = 9 and we got an accuracy of 0.7468.
 
 
 ```{r}
@@ -523,11 +523,23 @@ testnewsatisfaction(var1="Inflight.service", var2="Cleanliness")
 ```
 #Back to our origin research question we created a function which applies our models in order to evaluate if one or even more answers are important for our target variable (satisfaction)
 
-# First question: What factors are highly correlated to a satisfied passenger? 
-# Answer: Online-Boarding, Class, Inflight Entertainment  
+#First question: What factors are highly correlated to a satisfied passenger? 
+#Answer: Online-Boarding, Class, Inflight Entertainment  
 
-# Second quesiton: How good can you predict passenger satisfaction?
-# Answer: Applying the random forest model for our prediction we obtained bright results.
+#Second quesiton: How good can you predict passenger satisfaction?
+#Answer: Applying the random forest model for our prediction we obtained bright results.
+
+#Roles of the Team Members:
+
+#h1607903 Christian Shehata: Training of GLM and Decision Tree Model and Team coordinator. Set up of Github repository: https://github.com/christianshehata/passenger-satisfaction.
+#h11802161 Markus Bekhit: Training of Naive Bayes Model, lead presenter and feature selection.
+#h1610007 Lata Wojciech: Training of Artifical Neural Network and responsible for data selection.
+#h11777005 Mustafa Shamroukh: First inspection of data and presenter.
+#h11705087 Endrit Halili: Training of KNN, Random Forest Models and feature selection.
+#h11706783 Dario Kitzing: Training of Support Vector Machine, practical testing of the model and feature selection.
+
+
+
 
 
 
