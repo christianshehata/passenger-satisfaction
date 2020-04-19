@@ -3,7 +3,11 @@ title: "R Notebook"
 output: html_notebook
 ---
 ##Introduction
-In the scope of our project we mainly focused on the research question: What factors lead to customer satisfaction for an Airline?
+# # As Students of the university of economics in vienna have to be aware of dilemmas that can face any business. Being able to judge a situation facing a company correctly and act accordingly is one of our most important tasks as future graduates. Through this course we have learned many ways to analyze a companies data and make predictions for future scenarios.
+
+#Starting this project thought of different circumstances threatening a company and coming up proper analyzing methods and a way to predict an outcome. One of the biggest factors influencing a company's future is customer Satisfaction. For a business to keep its customer's satisfaction level high or at least stable is no easy task. To get a better look on what issues can influence the satisfaction level, We concentrated on random and anonymous airlines from a dataset provided by kaggle. we further trained our models thru different methods to be able to make a solid prediction for future use.
+
+#Starting this project thought of different circumstances threatening a company and coming up proper analyzing methods and a way to predict an outcome. One of the biggest factors influencing a company's future is customer Satisfaction. For a business to keep its customer's satisfaction level high or at least stable is no easy task. To get a better look on what issues can influence the satisfaction level, We concentrated on random and anonymous airlines from a dataset provided by kaggle. we further trained our models thru different methods to be able to make a solid prediction for future use.
 
 ###Variable Declaration
 Gender: Gender of the passengers (Female, Male)
@@ -78,7 +82,11 @@ train$satisfaction <- factor(train$satisfaction, levels = c("neutral or dissatis
 ```{r}
 head(train)
 ```
+#to get a first look on how the different variables interact with our satisfaction variable, we created some barchart to visualize their relationship. In first graph put flight distance with our response variable. It looks like the longer the flight distance the more satisfied were the customers.
 
+#the following variabele (Baggage.handling, Inflight.service, Inflight.entertainment, Food.and.drink, On.board.service, Seat.comfort, Cleanliness) have very similar graphs. customers tend to be satisfied more, when the service they recieve  meet their expectations.
+
+#looking at the Type.of.Travel we saw that most of the customers are business travellers and tend to be more satisfied with their flight experience. one reason could be that business travellers fly more often and tend to have a different mindset than others.
 
 ```{r}
 plot(data$satisfaction ~ data$Flight.Distance)
@@ -124,11 +132,11 @@ plot(data$satisfaction ~ data$Seat.comfort)
 ```{r}
 plot(data$satisfaction ~ data$Cleanliness)
 ```
+These boxplots deliver a better visualization of the variables. Most of these plots show a rather positive result. all the shown graphs except cleanliness and food and Drink have a mean of 4. interestingly the boxplots on board service and inflight Entertainment are identical with the mean equalling the 3rd quantile.
 
 ```{r}
 boxplot(data$Flight.Distance)
 ```
-
 
 ```{r}
 # 1= On board service
@@ -157,6 +165,7 @@ glm_model
 ```{r}
 plot(glm_model)
 ```
+
 ```{r}
 predicted_logistic <- predict(glm_model, test)
 ```
