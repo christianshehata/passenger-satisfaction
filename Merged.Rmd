@@ -2,15 +2,40 @@
 title: "R Notebook"
 output: html_notebook
 ---
+##Introduction
+In the scope of What factors lead to customer satisfaction for an Airline?
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
 
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
 
+###Variable Declaration
+Gender: Gender of the passengers (Female, Male)
+Customer Type: The customer type (Loyal customer, disloyal customer)
+Age: The actual age of the passengers
+Type of Travel: Purpose of the flight of the passengers (Personal Travel, Business Travel)
+Class: Travel class in the plane of the passengers (Business, Eco, Eco Plus)
+Flight distance: The flight distance of this journey
+Inflight wifi service: Satisfaction level of the inflight wifi service (0:Not Applicable;1-5)
+Departure/Arrival time convenient: Satisfaction level of Departure/Arrival time convenient
+Ease of Online booking: Satisfaction level of online booking
+Gate location: Satisfaction level of Gate location
+Food and drink: Satisfaction level of Food and drink
+Online boarding: Satisfaction level of online boarding
+Seat comfort: Satisfaction level of Seat comfort
+Inflight entertainment: Satisfaction level of inflight entertainment
+On-board service: Satisfaction level of On-board service
+Leg room service: Satisfaction level of Leg room service
+Baggage handling: Satisfaction level of baggage handlin
+Check-in service: Satisfaction level of Check-in service
+Inflight service: Satisfaction level of inflight service
+Cleanliness: Satisfaction level of Cleanliness
+Departure Delay in Minutes: Minutes delayed when departure
+Arrival Delay in Minutes: Minutes delayed when Arrival
+Satisfaction: Airline satisfaction level(Satisfaction, neutral or dissatisfaction)
 
 
 ```{r}
 library(caret)
+library(ggplot2)
 ```
 
 ```{r}
@@ -19,8 +44,7 @@ test <- read.csv(file = 'test.csv')
 ```
 
 ```{r}
-#We downloaded the data splitted as train and test data. We thought that we should bind this two datasets for our first data discovery to see how the data we got looks like and to get
-#a better understanding of the variables.
+#We downloaded the data splitted as train and test data. We thought that we should bind this two datasets for our first data discovery to see how the data we got looks like and to get a better understanding of the variables.
 data <- rbind(train, test)
 
 ```
@@ -556,7 +580,6 @@ as.numeric(list_of_matrixes)
 ```
 
 ```{r}
-library(ggplot2)
 ```
 
 ```{r}
@@ -572,4 +595,9 @@ ggplot(dataOfModels, aes(x=models, y=accuracy)) +
   geom_bar(stat = "identity", color="blue", fill=rgb(0.1,0.4,0.5,0.7))
 
 ```
+
+
+
+
+
 
