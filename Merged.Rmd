@@ -3,9 +3,7 @@ title: "R Notebook"
 output: html_notebook
 ---
 ##Introduction
-In the scope of What factors lead to customer satisfaction for an Airline?
-
-
+In the scope of our project we mainly focused on the research question: What factors lead to customer satisfaction for an Airline?
 
 ###Variable Declaration
 Gender: Gender of the passengers (Female, Male)
@@ -142,32 +140,26 @@ boxplot(data$Flight.Distance)
 # 7= Baggage handling
 boxplot(data$On.board.service, data$Seat.comfort, data$Cleanliness, data$Inflight.service, data$Inflight.entertainment, data$Food.and.drink, data$Baggage.handling)
 ```
+
+
+
 ```{r}
 set.seed(4567)
 ```
-
+#Christian 
+#After analyzing the first inspections on our dataset we initiated our further evaluation with a generalized linear model. It fits in linear, logistic regression models and in cases where the response variable has an error distribution that is non-normal. 
 
 ```{r}
-#Model Building Logistic Regression
 glm_model <- train(satisfaction~. -X -id, data = train, method = "glmnet", trControl = trainControl(method="cv",number=10), preProcess= c("center", "scale"))
+glm_model
 ```
-
-
-
-
-
-
+#Here we have a nice visualisation of our model. 
 ```{r}
-#plot logistic regression
 plot(glm_model)
 ```
-
-
 ```{r}
-#Predict Function Logistic Regression
 predicted_logistic <- predict(glm_model, test)
 ```
-
 
 ```{r}
 #Table Logistic Regression
@@ -178,6 +170,7 @@ table_glm
 ```{r}
 confusionMatrixLogistic <- confusionMatrix(table_glm)
 ```
+#So the decision tree belongs to the tree-based classification methods. The are not just solving classification problems, but also regression problems. Important here to mention is that we just use one predictor at a node as a splitting variable.
 
 ```{r}
 #Model Building Tree
@@ -191,15 +184,14 @@ tree <- train(
         )
 )
 ```
-
+#We obtained here an accuracy of 85% which is really good.
 
 ```{r}
-#Plot Decision Tree
 plot(tree)
 ```
 
+#Now we are feeding the prediction function with our extracted data.
 ```{r}
-#Predict Funtion Decision tree
 predicted_tree <- predict(tree, test)
 ```
 
